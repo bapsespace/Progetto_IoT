@@ -1,0 +1,19 @@
+setup(){
+	Serial
+	screen
+	pinMode
+	whait for setupIOT
+}
+
+
+loop(){
+
+}
+
+loopGyro()
+
+loopIOT()
+
+LCDprintInCenter(string,string or int) --> text allignment: top, center , raw number
+
+IpAdress2String() --> convert ip to a string xxx.xxx.xxx.xxx
