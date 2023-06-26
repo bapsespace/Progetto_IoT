@@ -23,15 +23,16 @@ int prevs=0;
 
 void setupCayenne()
 {
-    while(!startWifiConnection){
+    while(!startWifiConnection){        // keeps looping until main setup has complited 
       delay(10);    
     }   
-
+    
+    // RGB pins initialization
     pinMode(37,OUTPUT);
     pinMode(38,OUTPUT);
     pinMode(39,OUTPUT);
 
-    
+    // ask to choos between online and offline mode
     Serial.print("Attempting to connect to Network named: ");
     myScreen.clear();
     LCDprintInCenter("SMART CLOCK",0);
@@ -39,55 +40,55 @@ void setupCayenne()
     LCDprintInCenter(" 1 CONNECT ->",3);
     LCDprintInCenter("2 NO INTERNET ->",6);
 
-    while(true){
+    while(true){    // loops and waits until an option is pressed 
 
-      if(buttonPressed(1)){
+      if(buttonPressed(1)){   // ONLINE mode
         myScreen.clear();
         LCDprintInCenter("Connecting to",2);
         LCDprintInCenter(ssid,3);
-        digitalWrite(37,HIGH);
+        digitalWrite(37,HIGH);   // blue light on for debug
       
-        Cayenne.begin(username, password, clientID, ssid, wifiPassword);
+        Cayenne.begin(username, password, clientID, ssid, wifiPassword);  // initialization of wifi connection and also connection to the IoT Dashboard server
         
-        digitalWrite(37,LOW);
+        digitalWrite(37,LOW);   // blue light off for debug
     
         myScreen.clear();
         LCDprintInCenter("CONNECTED","center");
         delay(500);
-        break;
+        break;   // connection succesfull
       
       }
       
-      if(buttonPressed(2)){
+      if(buttonPressed(2)){   // OFFLINE mode 
         myScreen.clear();
         LCDprintInCenter("OFFLINE MODE","center");
-        offlineModeSelected=true;
-        skipValue=true;
+        offlineModeSelected=true;   // set flags 
+        skipValue=true; // this flag blocks the execution of IoT, not needed for offline mode
         delay(500);
         break;
       }
 
     }
     
-    wifiHasConnected=true;
+    wifiHasConnected=true;   //flags to allow main setup to resume after wifi connection
     
     
 }
 
 void loopCayenne()
 {
-    while(skipValue){
+    while(skipValue){   // if offline mode is selected loops forever, no connection
       delay(1000);
     }
     
     Cayenne.loop();
 
-    if (millis() > chrono){
+    if (millis() > chrono){   // time alive counter to check connection quality
         chrono = millis() + period_ms;
-        Cayenne.virtualWrite(0, chrono/1000);
+        Cayenne.virtualWrite(0, chrono/1000); // send counter to the IoT Dashboard
     }
 
-  if(s!=prevs){
+  if(s!=prevs){                   // sends the current saved time to the IoT Dashboard
     Cayenne.virtualWrite(10, s);
     Cayenne.virtualWrite(11, m);
     Cayenne.virtualWrite(12, h);
@@ -105,13 +106,16 @@ CAYENNE_IN_DEFAULT()
     //Process message here. If there is an error set an error message using getValue.setError(), e.g getValue.setError("Error message");
 }
 
-CAYENNE_IN(2)      // This function is called when data is sent from Cayenne.
+//used to receive from IoT dashboard the slider value to select rgb color
+CAYENNE_IN(2)      // This function is called when data is sent from Cayenne.  
 {
   int value = getValue.asInt(); // 0 to 255
   CAYENNE_LOG("Channel %d, pin %d, value %d", 2, 37, value);
 
   LED_slider= value;
 }
+
+// not used 
 CAYENNE_IN(3)      // This function is called when data is sent from Cayenne.
 {
   int value = getValue.asInt(); // 0 to 255

@@ -1,5 +1,5 @@
 
-
+// runs only once at start up to play the music 
 #include "pitches.h"
 
 // notes in the melody:
@@ -44,6 +44,6 @@ void setupMusic() {
   }
 }
 
-void loopMusic() {
+void loopMusic() {   // stops no need to do enything
   delay(10000);
 }

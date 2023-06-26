@@ -22,36 +22,41 @@ Screen_HX8353E myScreen;
 
 
 
-#include "Logo.h"
+#include "Logo.h" //it contains the matrix of the values of the pixel for the startup image 
 
 
 
+
+// variables containing seconds minutes and hours value in string format for printing on screen
 
 String hc = "00";
 String mc = "00";
 String sc = "00";
+
+// variables containing seconds minutes and hours value in decimal format
 int h=0;
-int m=0;
-int s=0;
+int m=0; 
+int s=0; 
 
 
 const int buttonOne = 33;     // the pin number of the pushbutton 
 const int buttonTwo = 32;     // the pin number of the pushbutton
 
 const int jswpin = 5;         //joystick button pin (NOT WORKING WHEN PRESSED BOARD FREEZE
-const int jxpin=2;            //joystick x axis
-const int jypin=26;           //joystick y axis
+const int jxpin=2;            //joystick x axis pin
+const int jypin=26;           //joystick y axis pin
 
-int jxval=0;
-int jyval=0;
+int jxval=0;        //joystick x axis value 
+int jyval=0;        //joystick y axis value 
 
 
-const int xpin = 23;                  // x-axis of the accelerometer
-const int ypin = 24;                  // y-axis
-const int zpin = 25;                  // z-axis (only on 3-axis models)
+const int xpin = 23;                  // x-axis pin of the accelerometer
+const int ypin = 24;                  // y-axis pin of the accelerometer
+const int zpin = 25;                  // z-axis pin(only on 3-axis models)
 const int posx = 128;
 const int posy = 128;
 
+// final string for time
 String val = "";
 String timer = hc + ":" + mc + ":" + sc;
 String previusTimer="99:99:99";
@@ -67,7 +72,7 @@ bool clockRunning=false;          //starts and stops clock that adds one second 
 bool mainRunning=false;           //is set to true when main loop is running
 bool swJoyStickAsGyro=false;       //if false uses accelerometer if true jostick is used to switch the rotation
 bool pauseJoystickAsGyro=false;   //used to momntarly use joystick value for somthing else whiout enabling accelerometer
-bool offlineModeSelected=false;
+bool offlineModeSelected=false;   //flag true when offline mode is selected at startup, used to chage rgb control IoT to rainbow loop
 
 
 void setup() {
@@ -80,6 +85,7 @@ void setup() {
 
   Serial.begin(115200);
 
+  //startup routine with display of the logo
   myScreen.begin();
   String s = myScreen.WhoAmI(); 
   myScreen.setOrientation(0);  
@@ -92,14 +98,15 @@ void setup() {
   pinMode(GREEN_LED,OUTPUT);
   pinMode(BLUE_LED,OUTPUT);
   
-  pinMode(buttonOne, INPUT_PULLUP);     
+  pinMode(buttonOne, INPUT_PULLUP);       //buttons pinmode set
   pinMode(buttonTwo, INPUT_PULLUP);   
-  pinMode(jswpin,INPUT);
+  pinMode(jswpin,INPUT); 
 
   delay(800);
-  startWifiConnection=true;
+  startWifiConnection=true;   // flag to enable start of wifi connection
+
   
-  while(!wifiHasConnected){
+  while(!wifiHasConnected){         // main stops until wifi has connected
     delay(10);
   }
 
@@ -107,10 +114,10 @@ void setup() {
 
 
 
-void loop(){
-  mainRunning=true;
+void loop(){  
+  mainRunning=true;  // flag used by other fuction to know when the main loop is running
   
-  if(buttonPressed(1)&& buttonPressed(2)){
+  if(buttonPressed(1)&& buttonPressed(2)){  // check if both button are pressed at the same time to trigger switch joystick to gyro
     if(currentOrientation==0){
       myScreen.setOrientation(0);
       myScreen.clear();
@@ -128,28 +135,28 @@ void loop(){
       LCDprintInCenter("Girami per iniziare","center");
     }
     
-    tempo(0,0,0);
+    tempo(0,0,0);   // reset swtich 
     
   }else{
-    if(buttonPressed(1)){
-      pauseJoystickAsGyro=true;
-      clockRunning=false;
+    if(buttonPressed(1)){    // check if only button 1 is pressed to enter manual time adjustment mode 
+      pauseJoystickAsGyro=true; // flag to pause joystick reading used as gyro in case is running in joystick mode, because now it needs to be used as a value incremet
+      clockRunning=false;   // flag to stop the clock
        
-      if(jyval<48){
+      if(jyval<48){  // if value is lower then dead zone threshold seconds are reduced faster as more bend is the joystick
         s--; 
         delay(map(jyval,0,50,0,1000));
       }
-      if(jyval>52){
+      if(jyval>52){ // if value is higher then dead zone threshold secods are incremented faster as more bend is the joystick 
         s++;
         delay(map(jyval,50,100,1000,0));
       }      
       
     }else{
-      pauseJoystickAsGyro=false;
-      clockRunning=true;
+      pauseJoystickAsGyro=false;  // resme normale operation
+      clockRunning=true;   // resume the clock
     }
       
-    if(buttonPressed(2)){
+    if(buttonPressed(2)){     // check if only second button is pressed, sets orientation to center only in joystick mode
       if(swJoyStickAsGyro){
         currentOrientation=0;
       }       
@@ -157,7 +164,7 @@ void loop(){
       
   }
 
- 
+ // checks the decimal time stored is never below zero, and adjust value accordingly if needed
   if(s<0){
     if(m>0)
       s=59;
@@ -176,10 +183,10 @@ void loop(){
     h=0;
 
 
-  if(currentOrientation != previusOrientation){
+  if(currentOrientation != previusOrientation){  // check if orientation is changed 
     myScreen.clear();
-    tempo(0,0,0);
-    switch (currentOrientation){
+    tempo(0,0,0);   // if it is changed reset timer
+    switch (currentOrientation){    // select correct orientation on the screen and print the timer or the appropriate String
       
       case 0:
         myScreen.setOrientation(0);
@@ -215,9 +222,9 @@ void loop(){
         
     }
     
-    previusOrientation=currentOrientation;
+    previusOrientation=currentOrientation; // used to check if orientation is changed
   }else{
-    if(currentOrientation!=0 && currentOrientation!=-1){
+    if(currentOrientation!=0 && currentOrientation!=-1){    // refresh timer string on screen at each cicle when orientation doesn't change
       //clockRunning=true;
       tempo();
       if(!timer.equals(previusTimer)){
@@ -242,7 +249,7 @@ void tempo(int x,int y, int z){
 
 
 
-void tempo(){
+void tempo(){  // check timer value is in the correct margins increment if needed. Also convert decimal to string adding 0 padding if needed
   
   if(s>=60){
     s=00;
@@ -302,7 +309,7 @@ void LCDprintInCenter(String text,int raw, int color){
 
 
 
-bool buttonPressed(){
+bool buttonPressed(){    // functino return true if any button has been pressed, with debounce
   int count=0;
   const int maxCount=10;
   
@@ -318,8 +325,8 @@ bool buttonPressed(){
   return false;
 }
 
-bool buttonPressed(int button){
-  int count=0;
+bool buttonPressed(int button){   // function returns selected button status, pressed or not, with debounce 
+  int count=0; 
   int pin=0;
   const int maxCount=10;
   if(button==1)
@@ -344,7 +351,7 @@ bool buttonPressed(int button){
 
 
 
-void logo50()
+void logo50()   // this function is called at startup, loads image matrix from the logo.h and prints it on screen
 {
     uint32_t p;
     uint16_t c;

@@ -1,6 +1,6 @@
 #define x_Energia_logo_100_132_bmp (128) //width of the picture
 #define y_Energia_logo_100_132_bmp (128) //height of the picture
-
+// startup logo matrix saved into memory
 #if defined(ENERGIA)
     static const uint16_t pic_Energia_logo_100_132_bmp[] = {
 #elif defined(ARDUINO) || defined(MPIDE) || defined(WIRING)

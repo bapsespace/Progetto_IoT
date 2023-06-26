@@ -8,7 +8,7 @@ void setup() {
 
   pinMode(6,INPUT);
 
-  for(int i=0;i<calibrationSamples;i++){
+  for(int i=0;i<calibrationSamples;i++){              // at startup reads some samples to determine the background noise level
     microphoneVal=analogRead(6);
     calibration+=microphoneVal;
     
@@ -24,7 +24,7 @@ void loop() {
   microphoneVal=analogRead(6);
 
   
-  if(microphoneVal<calibration-calibration/2){
+  if(microphoneVal<calibration-calibration/2){ //  After clibration in normal code execution if noise level is highr then background toggles the white light, also sends status to the IoT dashboard
     if(a){
       digitalWrite(RED_LED,HIGH);
       digitalWrite(GREEN_LED,HIGH);
