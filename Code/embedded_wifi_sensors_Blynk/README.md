@@ -9,3 +9,8 @@ The Code is subdivided into separete tasks written in differnt files, that execu
     - time values margines and format check
     - LCD print layout functions
     - logo print subroutine
+ 
+- "Cayenne" -> Internet connectivity Start up and main routines (internal delay)
+   - Select ONLINE and OFFLINE mode
+   - Connect to wifi and to IoT Dashboard
+   - update Iot Dashboard
