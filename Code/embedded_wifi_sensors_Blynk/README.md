@@ -1,9 +1,9 @@
 # Code Structure
 
 
-###The code is subdivided into separate tasks written in different files that execute in parallel with different times of recurrence:
+The code is subdivided into separate tasks written in different files that execute in parallel with different times of recurrence:
 
-#- "embedded_wifi_sensors_Blynk.ino" -> Start Up and Main routines (loops every 1ms)
+- "embedded_wifi_sensors_Blynk.ino" -> Start Up and Main routines (loops every 1ms)
     - Startup Routine
     - Button pressed functions
     - Screen orientation update
