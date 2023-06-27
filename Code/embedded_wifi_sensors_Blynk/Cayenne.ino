@@ -3,8 +3,8 @@
 #include <CayenneMQTTWiFi.h>
 
 // WiFi network info.
-char ssid[] = "Vodafone-C01560209";
-char wifiPassword[] = "tT29fapETnZF3qn7";
+char ssid[] = "huawei";
+char wifiPassword[] = "wifilorenzo";
 
 // Cayenne authentication info. This should be obtained from the Cayenne Dashboard.
 char username[] = "ff9d91a0-aeba-11ed-b72d-d9f6595c5b9d";
